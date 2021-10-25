@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../routes/app_router.dart';
+import '../bloc/todo/todo_bloc.dart';
 import '../simple_bloc_observer.dart';
-import '../bloc/splash_screen/splash_bloc.dart';
+import '../routes/custom_app_route.dart';
 import '../screens/splash/splash_screen.dart';
 import '../repositories/todo_repository.dart';
 import '../services/splash_screen_service.dart';
-
-import '../screens/home/home_screen.dart';
+import '../bloc/splash_screen/splash_bloc.dart';
+import '../screens/navigation/bottom_navigation_screen.dart';
 
 void main() {
   Bloc.observer = SimpleBlocObserver();
@@ -27,7 +30,10 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
               create: (_) => SplashBloc(todoRepository: todoRepository)
-                ..add(SplashScreenStartedEvent()))
+                ..add(SplashScreenStartedEvent())),
+          BlocProvider(
+              create: (_) => TodoBloc(todoRepository: todoRepository)
+                ..add(TodoStartedEvent()))
         ],
         child: BlocBuilder<SplashBloc, SplashState>(builder: (context, state) {
           if (state is SplashScreenLoadingState) {
@@ -42,7 +48,9 @@ class MyApp extends StatelessWidget {
             return const MaterialApp(
               debugShowCheckedModeBanner: false,
               title: "Todo List BLoC",
-              home: HomeScreen(),
+              onGenerateRoute: AppRouter.onGenerateRoute,
+              initialRoute: CustomAppRoute.homeScreen,
+              home: BottomNavigationScreen(),
             );
           }
 
